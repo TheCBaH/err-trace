@@ -1,0 +1,35 @@
+// For format details, see https://aka.ms/devcontainer.json.
+{
+    "name": "err_trace",
+    "build":  {
+        "dockerfile": "Dockerfile"
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": "true",
+            "username": "vscode",
+            "userUid": "1000",
+            "userGid": "1000",
+            "upgradePackages": "false"
+        },
+        "./features/ocaml": {
+            "version": "${localEnv:OCAML_VERSION}",
+            "packages": "ocamlformat#0.28.1 ppx_expect mdx js_of_ocaml-compiler js_of_ocaml-ppx",
+            "optional-packages": "melange",
+            "options": "ocaml-option-static",
+            "system-packages": "musl-dev musl-tools"
+        },
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ocamllabs.ocaml-platform"
+            ]
+        }
+    },
+    "remoteUser": "vscode",
+    "postCreateCommand": {
+        "opam": "sudo .devcontainer/fix-opam-owner.sh $(id -u) $(id -g)"
+    },
+    "waitFor": "postCreateCommand"
+}

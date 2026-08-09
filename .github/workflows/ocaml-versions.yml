@@ -1,0 +1,86 @@
+name: OCaml Versions
+
+on:
+  workflow_call:
+    outputs:
+      versions:
+        description: 'JSON array of OCaml versions to build and test'
+        value: ${{ jobs.versions.outputs.versions }}
+      images_matrix:
+        description: 'JSON array of {os, ocaml_version, platform} objects for image builds'
+        value: ${{ jobs.versions.outputs.images_matrix }}
+      features_matrix:
+        description: 'JSON array selecting cached images and architectures for dependency-heavy feature suites'
+        value: ${{ jobs.versions.outputs.features_matrix }}
+
+jobs:
+  versions:
+    runs-on: ubuntu-slim
+    outputs:
+      versions: ${{ steps.versions.outputs.versions }}
+      images_matrix: ${{ steps.versions.outputs.images_matrix }}
+      features_matrix: ${{ steps.versions.outputs.features_matrix }}
+    steps:
+    - name: versions
+      id: versions
+      run: |
+        python3 - <<'EOF'
+        import json, os
+        versions = ["4.12.1", "4.13.1", "4.14.3", "5.2.1", "5.3.0", "5.4.1", "5.5.0"]
+        # The package floor and the next compiler are kept on the two native
+        # 64-bit architectures, limiting the legacy toolchain and emulation
+        # surface. 4.14.3 covers the supported 32-bit targets.
+        no_32bit = {"4.12.1", "4.13.1"}
+        matrix = []
+        for ver in versions:
+            v5 = ver.startswith("5")
+            matrix.append({"os": "ubuntu-24.04",     "ocaml_version": ver, "platform": "linux/amd64"})
+            matrix.append({"os": "ubuntu-24.04-arm", "ocaml_version": ver, "platform": "linux/arm64"})
+            if not v5 and ver not in no_32bit:
+                matrix.append({"os": "ubuntu-24.04",     "ocaml_version": ver, "platform": "linux/i386"})
+                matrix.append({"os": "ubuntu-24.04-arm", "ocaml_version": ver, "platform": "linux/arm/v7"})
+        features = []
+        feature_targets = {
+            # Native libraries support every host architecture covered by the
+            # core matrix. OCaml 5 exercises Domains on 64-bit targets; 4.14
+            # remains the supported switch for 32-bit targets.
+            "native-adapters": [
+                ("ubuntu-24.04", "5.5.0", "linux/amd64"),
+                ("ubuntu-24.04-arm", "5.5.0", "linux/arm64"),
+                ("ubuntu-24.04", "4.14.3", "linux/i386"),
+                ("ubuntu-24.04-arm", "4.14.3", "linux/arm/v7"),
+            ],
+            # Node/Melange are tested on both native 64-bit runner
+            # architectures and require the 4.14 switch.
+            "javascript": [
+                ("ubuntu-24.04", "4.14.3", "linux/amd64"),
+                ("ubuntu-24.04-arm", "4.14.3", "linux/arm64"),
+            ],
+            "octez": [
+                ("ubuntu-24.04", "4.14.3", "linux/amd64"),
+                ("ubuntu-24.04-arm", "4.14.3", "linux/arm64"),
+                # The historical repository has no Octez package compatible
+                # with OCaml 5. These rows continuously verify that the
+                # optional capability is skipped instead of breaking images.
+                ("ubuntu-24.04", "5.5.0", "linux/amd64"),
+                ("ubuntu-24.04-arm", "5.5.0", "linux/arm64"),
+            ],
+        }
+        for feature, targets in feature_targets.items():
+            for runner, version, platform in targets:
+                features.append({
+                    "feature": feature,
+                    "name": feature,
+                    "config": f".devcontainer/{feature}/devcontainer.json",
+                    "os": runner,
+                    "ocaml_version": version,
+                    "platform": platform,
+                })
+        def write_output(f, name, value):
+            f.write(f"{name}<<__OUTPUT__\n{value}\n__OUTPUT__\n")
+        with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+            write_output(f, "versions", json.dumps(versions, indent=2))
+            write_output(f, "images_matrix", json.dumps(matrix, indent=2))
+            write_output(f, "features_matrix", json.dumps(features, indent=2))
+        EOF
+        cat "$GITHUB_OUTPUT"

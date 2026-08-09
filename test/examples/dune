@@ -1,0 +1,18 @@
+(cram
+ (applies_to poly_errors)
+ (deps ../../examples/poly_errors.bc ../../examples/poly_errors.exe))
+
+(cram
+ (applies_to poly_errors_js)
+ (enabled_if
+  (= %{env:ERR_TRACE_TEST_JS=false} "true"))
+ (deps ../../examples/poly_errors.bc.js))
+
+(subdir
+ melange
+ (cram
+  (applies_to poly_errors)
+  (enabled_if
+   (= %{env:ERR_TRACE_TEST_MELANGE=false} "true"))
+  (deps
+   (alias ../../../examples/melange/poly-errors-melange))))

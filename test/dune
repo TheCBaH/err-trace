@@ -1,0 +1,38 @@
+(library
+ (name core_tests)
+ (modules core)
+ (inline_tests
+  (modes byte native))
+ (libraries err_trace)
+ (preprocess
+  (pps ppx_expect)))
+
+(executable
+ (name multicore)
+ (modules multicore)
+ (modes native)
+ (enabled_if
+  (>= %{ocaml_version} 5.0))
+ (libraries err_trace))
+
+(executable
+ (name js)
+ (modules js)
+ (modes js)
+ (enabled_if
+  (= %{env:ERR_TRACE_TEST_JS=false} "true"))
+ (libraries err_trace js_of_ocaml)
+ (preprocess
+  (pps js_of_ocaml-ppx)))
+
+(melange.emit
+ (target melange-output)
+ (alias melange-test)
+ (modules melange_test)
+ (module_systems commonjs)
+ (emit_stdlib true)
+ (enabled_if
+  (= %{env:ERR_TRACE_TEST_MELANGE=false} "true"))
+ (libraries err_trace melange)
+ (preprocess
+  (pps melange.ppx)))

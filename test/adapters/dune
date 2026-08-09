@@ -1,0 +1,53 @@
+(executable
+ (name base_async)
+ (modes byte exe)
+ (enabled_if
+  (= %{env:ERR_TRACE_TEST_BASE_ASYNC=false} "true"))
+ (libraries err_trace base async_kernel))
+
+(executable
+ (name lwt_adapter)
+ (modes byte exe)
+ (enabled_if
+  (= %{env:ERR_TRACE_TEST_LWT=false} "true"))
+ (libraries err_trace lwt))
+
+(executable
+ (name rresult_adapter)
+ (modes byte exe)
+ (enabled_if
+  (= %{env:ERR_TRACE_TEST_RRESULT=false} "true"))
+ (libraries err_trace rresult))
+
+(executable
+ (name cmdliner)
+ (modes byte exe)
+ (enabled_if
+  (= %{env:ERR_TRACE_TEST_CMDLINER=false} "true"))
+ (libraries err_trace cmdliner))
+
+(executable
+ (name mirage)
+ (modes byte exe)
+ (enabled_if
+  (= %{env:ERR_TRACE_TEST_MIRAGE=false} "true"))
+ (libraries err_trace mirage-flow))
+
+(executable
+ (name octez)
+ (modes byte exe)
+ (enabled_if
+  (= %{env:ERR_TRACE_TEST_OCTEZ=false} "true"))
+ (libraries err_trace octez-libs.error-monad))
+
+(executable
+ (name fmt_logs_yojson)
+ (modes byte exe)
+ (enabled_if
+  (= %{env:ERR_TRACE_TEST_FMT_LOGS_YOJSON=false} "true"))
+ (libraries err_trace fmt logs yojson))
+
+(executable
+ (name compiler_locations)
+ (modes byte exe)
+ (libraries err_trace compiler-libs.common))

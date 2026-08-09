@@ -1,0 +1,7 @@
+(executable
+ (name allocation)
+ (libraries err_trace))
+
+(executable
+ (name allocation_invariants)
+ (libraries err_trace))

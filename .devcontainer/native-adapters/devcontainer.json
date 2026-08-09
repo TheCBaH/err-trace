@@ -1,0 +1,26 @@
+{
+    "name": "err_trace native adapters",
+    "build": {
+        "dockerfile": "../Dockerfile"
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": "true",
+            "username": "vscode",
+            "userUid": "1000",
+            "userGid": "1000",
+            "upgradePackages": "false"
+        },
+        "../features/ocaml": {
+            "version": "${localEnv:OCAML_VERSION}",
+            "packages": "ocamlformat#0.28.1 ppx_expect base async_kernel lwt rresult cmdliner mirage-flow fmt logs yojson",
+            "options": "ocaml-option-static",
+            "system-packages": "musl-dev musl-tools"
+        }
+    },
+    "remoteUser": "vscode",
+    "postCreateCommand": {
+        "opam": "sudo .devcontainer/fix-opam-owner.sh $(id -u) $(id -g)"
+    },
+    "waitFor": "postCreateCommand"
+}

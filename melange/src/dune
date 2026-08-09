@@ -1,0 +1,18 @@
+; Melange build of the base library. The ordinary stanza in src/ is disabled
+; when this one is enabled so normal builds do not schedule melc rules.
+
+(copy_files#
+ (files ../../src/err.ml))
+
+(copy_files#
+ (files ../../src/err.mli))
+
+(library
+ (name err_trace)
+ (public_name err_trace)
+ (synopsis "Typed recoverable errors with bounded provenance")
+ (modes byte native melange)
+ (enabled_if
+  (= %{env:ERR_TRACE_TEST_MELANGE=false} "true"))
+ (wrapped false)
+ (modules err))

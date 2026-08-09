@@ -1,0 +1,37 @@
+opam-version: "2.0"
+synopsis: "Typed recoverable errors with bounded provenance"
+description: """
+err_trace is a dependency-free OCaml library that preserves application-owned
+error types while attaching optional source origins and bounded semantic event
+traces. It provides synchronous monitoring, structured exception boundaries,
+composable Format printers, and portable behavior across native OCaml,
+js_of_ocaml, and Melange.
+"""
+maintainer: "err_trace maintainers"
+authors: ["Vladimir N. Silyaev"]
+license: "MIT"
+homepage: "https://github.com/TheCBaH/err_trace"
+bug-reports: "https://github.com/TheCBaH/err_trace/issues"
+tags: ["error-handling" "typed-errors" "tracing" "diagnostics" "javascript"]
+build: ["dune" "build" "-p" name]
+run-test: ["dune" "runtest" "-p" name]
+depends: [
+  "ocaml" {>= "4.12.0"}
+  "dune" {>= "3.15"}
+  "odoc" {with-doc}
+  "ppx_expect" {with-test}
+  "mdx" {with-test}
+  "base" {with-test}
+  "async_kernel" {with-test}
+  "lwt" {with-test}
+  "rresult" {with-test}
+  "cmdliner" {with-test}
+  "mirage-flow" {with-test}
+  "fmt" {with-test}
+  "logs" {with-test}
+  "yojson" {with-test}
+  "js_of_ocaml" {with-test}
+  "js_of_ocaml-compiler" {with-test}
+  "js_of_ocaml-ppx" {with-test}
+]
+dev-repo: "git+https://github.com/TheCBaH/err_trace.git"

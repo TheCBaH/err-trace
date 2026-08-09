@@ -1,0 +1,27 @@
+{
+    "name": "err_trace Octez adapter",
+    "build": {
+        "dockerfile": "../Dockerfile"
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": "true",
+            "username": "vscode",
+            "userUid": "1000",
+            "userGid": "1000",
+            "upgradePackages": "false"
+        },
+        "../features/ocaml": {
+            "version": "${localEnv:OCAML_VERSION}",
+            "base-packages": "dune",
+            "optional-packages": "octez-libs",
+            "system-packages": "cargo cmake libev-dev libgmp-dev pkg-config rustc",
+            "repositories": "octez-2026 git+https://github.com/ocaml/opam-repository.git#4413cea89dc2809c85f68c88c6e28c410f664d95"
+        }
+    },
+    "remoteUser": "vscode",
+    "postCreateCommand": {
+        "opam": "sudo .devcontainer/fix-opam-owner.sh $(id -u) $(id -g)"
+    },
+    "waitFor": "postCreateCommand"
+}

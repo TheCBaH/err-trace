@@ -1,0 +1,8 @@
+(install
+ (section doc)
+ (package err_trace)
+ (files error-changes.md))
+
+(mdx
+ (files README.md)
+ (libraries err_trace))

@@ -1,0 +1,18 @@
+(executable
+ (name poly_errors)
+ (modes byte exe js)
+ (libraries err_trace))
+
+(subdir
+ melange
+ (copy_files#
+  (files ../poly_errors.ml))
+ (melange.emit
+  (target poly-errors-output)
+  (alias poly-errors-melange)
+  (modules poly_errors)
+  (module_systems commonjs)
+  (emit_stdlib true)
+  (enabled_if
+   (= %{env:ERR_TRACE_TEST_MELANGE=false} "true"))
+  (libraries err_trace)))
